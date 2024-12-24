@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+		xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		elementFormDefault="qualified">
+
+	<!-- definition of simple elements -->
+	<xs:element name="node">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attributeGroup ref="attributes"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="image">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attributeGroup ref="attributes"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="text">
+		<xs:complexType mixed="true">
+			<xs:sequence>
+				<xs:any minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attributeGroup ref="attributes"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="button">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attributeGroup ref="attributes"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="property">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="name"
+								  type="xs:string"
+								  use="required"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:attributeGroup name="attributes">
+		<xs:attribute name="pressed">
+			<xs:annotation>
+				<xs:documentation>Triggered event if the user pressed the widget.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="hover">
+			<xs:annotation>
+				<xs:documentation>Triggered event if the user hovered over the widget.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="width">
+			<xs:annotation>
+				<xs:documentation>Set the width of the widget as pixels or percent value.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="height">
+			<xs:annotation>
+				<xs:documentation>Set the height of the widget as pixels or percent value.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="image_mode">
+			<xs:annotation>
+				<xs:documentation>You can choose the following modes: [Auto, Stretch, Sliced or Tiled]</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="margin">
+			<xs:annotation>
+				<xs:documentation>Set the node margin. Look css tips for this, it will work here to!</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="padding">
+			<xs:annotation>
+				<xs:documentation>Set the node padding. Look css tips for this, it will work here to!</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="display">
+			<xs:annotation>
+				<xs:documentation>You can choose the following modes: [Block, Flex, Grid or None]</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+		<xs:attribute name="watch">
+			<xs:annotation>
+				<xs:documentation>Watch for changes at the given id. The id is located by your target.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="id">
+
+			<xs:annotation>
+				<xs:documentation>Set a unique identifier for find html widget faster and saver than names which can be duplicated.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="target">
+
+			<xs:annotation>
+				<xs:documentation>The called target</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="src">
+
+			<xs:annotation>
+				<xs:documentation>External sources like images or something.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="on_exit">
+
+			<xs:annotation>
+				<xs:documentation>Code which will be triggered if the widget was lost hover or focus state.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="on_enter">
+
+			<xs:annotation>
+				<xs:documentation>Code which will triggered if the widget was hovered or focused.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="on_press">
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="on_spawn">
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="position">
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="overflow">
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="direction">
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="align_self">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="align_items">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="align_content">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="justify_self">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="justify_items">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="justify_content">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="flex_direction">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="flex_wrap">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="flex_grow">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="flex_shrink">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="flex_basis">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="row_gap">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="column_gap">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="grid_auto_flow">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="grid_auto_rows">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="grid_auto_columns">
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="grid_template_rows">
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+		<xs:attribute name="grid_template_columns">
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="grid_row">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="grid_column">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="font">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="font_color">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="font_size">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="duration">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="delay">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ease">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="max_height">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="max_width">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="min_height">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="min_width">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="bottom">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="top">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="right">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="left">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+
+		<xs:attribute name="border">
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="border_radius">
+
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="background">
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="border_color">
+			<xs:annotation>
+				<xs:documentation></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
+
+	<xs:element name="slot"
+				type="xs:token"/>
+
+	<xs:group name="nodes">
+		<xs:sequence>
+			<xs:element ref="node" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="image" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="button" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="text" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="slot" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:group>
+
+	<!-- definition of complex elements -->
+	<xs:element name="template">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" minOccurs="0" type="xs:string"/>
+				<xs:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:group ref="nodes" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>
