@@ -1,15 +1,12 @@
-use std::time::Duration;
 use bevy::prelude::*;
 use bevy::time::Stopwatch;
-use bevy::ui::TransparentUi;
+use bevy_hui::prelude::{HtmlFunctions, HtmlNode, HtmlStyle};
 use crate::manager::AppState;
-use crate::ui::UIElement;
 
 #[derive(Component, Resource)]
 struct ScreenState {
     timer: Stopwatch,
-    step : usize,
-    next_step : Option<f32>
+    step : usize
 }
 
 pub struct SplashScreenPlugin;
@@ -19,7 +16,6 @@ impl Plugin for SplashScreenPlugin {
         app.insert_resource(ScreenState {
             timer: Stopwatch::new(),
             step: 0,
-            next_step: Some(3.0),
         });
         app.add_systems(OnEnter(AppState::SplashScreen), create_screen);
         app.add_systems(Update, update_screen.run_if(in_state(AppState::SplashScreen)));
@@ -27,111 +23,151 @@ impl Plugin for SplashScreenPlugin {
     }
 }
 
-fn create_screen(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn create_screen(mut commands: Commands,
+                 asset_server: Res<AssetServer>,
+                 mut html_functions: HtmlFunctions
+) {
+    commands.spawn(HtmlNode(asset_server.load("ui/splash-screen.xml")));
 
-    let bevy_logo = asset_server.load("logos/bevy_logo_dark.png");
-
-    commands.spawn(Node {
-        width: Val::Percent(100.0),
-        height: Val::Percent(100.0),
-        justify_content: JustifyContent::Center,
-        align_items: AlignItems::Center,
-        ..default()
-    })
-        .insert(Name::new("SplashScreen"))
-        .insert(BackgroundColor(Color::srgb(0.05, 0.05, 0.05)))
-        .insert(UIElement)
-        .with_children(|parent| {
-
-            // Bevy Logo
-            parent.spawn(Node::default())
-                .insert(Name::new("Container 1"))
-                .insert(UIElement)
-                .insert(Visibility::Hidden)
-                .with_children(|parent| {
-                    parent.spawn(Node {
-                        width: Val::Px(600.0),
-                        height: Val::Px(175.0),
-                        margin: UiRect::new(Val::Px(250.0), Val::Px(0.0), Val::Px(0.0), Val::Px(0.0)),
-                        ..default()
-                    })
-                        .insert(ImageNode {
-                            image: bevy_logo,
-                            ..default()
-                        })
-                        .insert(Name::new("Bevy Logo"));
-                });
-
-            // Vogeez
-            parent.spawn(Node::default())
-                .insert(Name::new("Container 2"))
-                .insert(UIElement)
-                .insert(Visibility::Hidden)
-                .with_children(|parent| {
-                    parent.spawn(Text::new("Vogeez Studio"))
-                        .insert(Name::new("Vogeez Studio"))
-                        .insert(TextColor(Color::WHITE))
-                        .insert(TextFont {
-                            font_size: 40.0,
-                            ..default()
-                        });
-                });
-        });
+    html_functions.register("play_life_cycle", play_life_cycle);
+    html_functions.register("set_name_con_1", set_name_con_1);
+    html_functions.register("set_name_con_2", set_name_con_2);
 }
 
-fn update_screen(mut commands: Commands,
-                 mut screen_state: ResMut<ScreenState>,
-                 mut query: Query<(&mut Visibility, &Name, Entity), With<UIElement>>,
-                 mut next_state: ResMut<NextState<AppState>>,
-                 keyboard: Res<ButtonInput<KeyCode>>,
-                 mouse: Res<ButtonInput<MouseButton>>
+fn update_screen(
+    mut screen_state: ResMut<ScreenState>,
+    mut query: Query<(&mut BackgroundColor, &Name), With<Name>>,
+    mut display_query: Query<(&mut HtmlStyle, &Name), With<Name>>,
+    mut next_state: ResMut<NextState<AppState>>,
+    time: Res<Time>,
 ) {
-    screen_state.timer.tick(Duration::from_secs_f32(1.0 / 60.0));
+    screen_state.timer.tick(time.delta());
 
-    if keyboard.just_pressed(KeyCode::Enter) || mouse.just_pressed(MouseButton::Left) {
-        screen_state.next_step = Some(0.0);
+    match screen_state.step {
+        0 => handle_delay_step(&mut screen_state, 1),
+        1 => handle_fade_out_step(&mut screen_state, &mut query, time, 2),
+        2 => handle_delay_step(&mut screen_state, 3),
+        3 => handle_fade_in_step(&mut screen_state, &mut query, time, 4),
+        4 => handle_step_4(&mut screen_state, &mut display_query),
+        5 => handle_fade_out_step(&mut screen_state, &mut query, time, 6),
+        6 => handle_delay_step(&mut screen_state, 7),
+        7 => handle_fade_in_step(&mut screen_state, &mut query, time, 8),
+        8 => handle_step_8(&mut screen_state, &mut next_state),
+        _ => {}
     }
+}
 
-    if let Some(next) = screen_state.next_step {
-        if screen_state.timer.elapsed_secs() >= next {
-            screen_state.step += 1;
-            screen_state.timer.reset();
-            
-            match screen_state.step {
-                1 => {
-                    for (mut vis, name, _) in query.iter_mut() {
-                        if name.as_str().eq("Container 1") {
-                            *vis = Visibility::Visible;
-                        }
-                    }
-                    screen_state.next_step = Some(4.0);
+fn handle_delay_step(screen_state: &mut ResMut<ScreenState>, next_step: usize) {
+    if screen_state.timer.elapsed_secs() >= 2.0 {
+        screen_state.step = next_step;
+        screen_state.timer.reset();
+    }
+}
+
+fn handle_fade_out_step(
+    screen_state: &mut ResMut<ScreenState>,
+    query: &mut Query<(&mut BackgroundColor, &Name), With<Name>>,
+    time: Res<Time>,
+    next_step: usize,
+) {
+    for (mut background_color, name) in query.iter_mut() {
+        if name.as_str() == "Overlay" {
+            if let BackgroundColor(Color::Srgba(Srgba { red, green, blue, alpha })) = *background_color {
+                let reduction_speed = 0.5;
+                let delta_alpha = reduction_speed * time.delta_secs();
+                let new_alpha = (alpha - delta_alpha).max(0.0);
+                *background_color = BackgroundColor(Color::Srgba(Srgba { red, green, blue, alpha: new_alpha }));
+                if new_alpha == 0.0 {
+                    screen_state.step = next_step;
                 }
-
-                2 => {
-                    for (mut vis, name, entity) in query.iter_mut() {
-                        if name.as_str().eq("Container 1") {
-                            commands.entity(entity).despawn_recursive();
-                        }
-                        if name.as_str().eq("Container 2") {
-                            *vis = Visibility::Visible;
-                        }
-                    }
-                    screen_state.next_step = Some(4.0);
-                }
-
-                3 => {
-                    next_state.set(AppState::TitleScreen);
-                    screen_state.next_step = None;
-                }
-
-                _ => {}
             }
         }
     }
 }
 
-fn destroy_screen(mut commands: Commands, query: Query<Entity, With<UIElement>>) {
-    for entity in query.iter() {
-        commands.entity(entity).despawn_recursive();
+fn handle_fade_in_step(
+    screen_state: &mut ResMut<ScreenState>,
+    query: &mut Query<(&mut BackgroundColor, &Name), With<Name>>,
+    time: Res<Time>,
+    next_step: usize,
+) {
+    for (mut background_color, name) in query.iter_mut() {
+        if name.as_str() == "Overlay" {
+            if let BackgroundColor(Color::Srgba(Srgba { red, green, blue, alpha })) = *background_color {
+                let reduction_speed = 0.5;
+                let delta_alpha = reduction_speed * time.delta_secs();
+                let new_alpha = (alpha + delta_alpha).min(1.0);
+                *background_color = BackgroundColor(Color::Srgba(Srgba { red, green, blue, alpha: new_alpha }));
+                if new_alpha == 1.0 {
+                    screen_state.step = next_step;
+                }
+            }
+        }
     }
+}
+
+fn handle_step_4(
+    screen_state: &mut ResMut<ScreenState>,
+    display_query: &mut Query<(&mut HtmlStyle, &Name), With<Name>>,
+) {
+    if screen_state.timer.elapsed_secs() >= 2.0 {
+        for (mut style, name) in display_query.iter_mut() {
+            if name.as_str() == "Container-1" {
+                style.computed.node.display = Display::None;
+                continue;
+            }
+
+            if name.as_str() == "Container-2" {
+                style.computed.node.display = Display::Flex;
+            }
+        }
+
+        screen_state.step = 5;
+        screen_state.timer.reset();
+    }
+}
+
+fn handle_step_8(
+    screen_state: &mut ResMut<ScreenState>,
+    next_state: &mut ResMut<NextState<AppState>>,
+) {
+    if screen_state.timer.elapsed_secs() >= 2.0 {
+        screen_state.timer.reset();
+        next_state.set(AppState::TitleScreen);
+    }
+}
+
+fn destroy_screen(mut commands: Commands, query: Query<(Entity, &Name), With<Name>>) {
+    for (entity, name) in query.iter() {
+        if name.as_str().eq("Container-Main") {
+            commands.entity(entity).despawn_recursive();
+        }
+    }
+}
+
+fn play_life_cycle(In(entity): In<Entity>,
+                   mut commands: Commands
+) {
+    commands.entity(entity).insert(Name::new("Container-Main"));
+
+    commands.spawn(Node {
+        width: Val::Percent(100.0),
+        height: Val::Percent(100.0),
+        ..default()
+    })
+        .insert(Name::new("Overlay"))
+        .insert(BackgroundColor(Color::srgba_u8(28, 31, 31, 255)))
+        .insert(ZIndex(1));
+}
+
+fn set_name_con_1(In(entity): In<Entity>,
+                  mut commands: Commands
+) {
+    commands.entity(entity).insert(Name::new("Container-1"));
+}
+
+fn set_name_con_2(In(entity): In<Entity>,
+                  mut commands: Commands
+) {
+    commands.entity(entity).insert(Name::new("Container-2"));
 }

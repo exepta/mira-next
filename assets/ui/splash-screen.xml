@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="../schema.xsd">
+
+    <property name="bevy-text">Powered by:</property>
+    <property name="no-name-text">Mira Studios</property>
+
+    <!-- Main Container (#59bbbd) -->
+    <node id="container-main"
+          align_items="center"
+          justify_content="center"
+          flex_direction="column"
+          column_gap="24px"
+          width="100%"
+          height="100%"
+          background="#1c1f1f"
+          on_spawn="play_life_cycle">
+
+        <!-- Bevy Splash Container -->
+        <node id="container-1"
+              target="container-1"
+              watch="container-main"
+              flex_direction="column"
+              width="100%"
+              height="100%"
+              align_items="center"
+              justify_content="center"
+              column_gap="24px"
+              display="flex"
+              on_spawn="set_name_con_1"
+        >
+
+            <text id="bevy-text"
+                  font_color="#fff"
+                  font_size="20">
+                {bevy-text}
+            </text>
+
+            <image id="bevy-logo"
+                   src="logos/bevy_logo_dark.png"
+                   ease="cubic_in"
+                   delay="0.8"
+            />
+
+        </node>
+
+        <!-- No-Name Studio Container -->
+        <node id="container-2"
+              target="container-2"
+              watch="container-main"
+              flex_direction="column"
+              width="100%"
+              height="100%"
+              align_items="center"
+              justify_content="center"
+              column_gap="24px"
+              display="none"
+              on_spawn="set_name_con_2"
+        >
+
+            <text id="no-name-text"
+                  font_color="#fff"
+                  font_size="40">
+                {no-name-text}
+            </text>
+
+        </node>
+
+    </node>
+
+
+
+</template>

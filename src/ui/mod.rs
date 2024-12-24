@@ -5,9 +5,6 @@ use crate::manager::{AppState, InGameState};
 use crate::ui::splash_screen::SplashScreenPlugin;
 
 #[derive(Component)]
-pub struct UIElement;
-
-#[derive(Component)]
 struct UIViewCamera;
 
 pub struct UIPlugin;

@@ -1,10 +1,14 @@
 use bevy::input::common_conditions::input_toggle_active;
 use bevy::prelude::*;
+use bevy::remote::http::RemoteHttpPlugin;
+use bevy::remote::RemotePlugin;
+use bevy_hui::HuiPlugin;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_rapier3d::prelude::{DebugRenderStyle, NoUserData, RapierDebugRenderPlugin, RapierPhysicsPlugin};
 use crate::ui::UIPlugin;
 
 #[derive(Component, Resource, States, Default, Debug, Clone, PartialEq, Eq, Hash)]
+#[allow(dead_code)]
 pub enum AppState {
     #[default]
     Startup,
@@ -17,6 +21,7 @@ pub enum AppState {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+#[allow(dead_code)]
 pub enum MenuState {
     #[default]
     MainUi,
@@ -26,6 +31,7 @@ pub enum MenuState {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+#[allow(dead_code)]
 pub enum InGameState {
     #[default]
     Playing,
@@ -33,6 +39,7 @@ pub enum InGameState {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+#[allow(dead_code)]
 pub enum LoadingState {
     #[default]
     Ready,
@@ -46,6 +53,7 @@ impl Plugin for ManagerPlugin {
         app.init_state::<AppState>();
 
         app.add_plugins(WorldInspectorPlugin::default().run_if(input_toggle_active(false, KeyCode::F3)));
+        app.add_plugins((HuiPlugin, RemotePlugin::default(), RemoteHttpPlugin::default()));
 
         app
             .add_plugins((

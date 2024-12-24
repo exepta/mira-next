@@ -1,6 +1,7 @@
 mod manager;
 mod ui;
 
+use bevy::image::ImageSamplerDescriptor;
 use bevy::prelude::*;
 use bevy::render::RenderPlugin;
 use bevy::render::settings::{Backends, RenderCreation, WgpuFeatures, WgpuSettings};
@@ -33,6 +34,10 @@ fn at_initialize_bevy(app: &mut App) -> &mut App {
             RenderPlugin {
                 render_creation: RenderCreation::Automatic(create_gpu_settings()),
                 ..default()
+            }
+        ).set(
+            ImagePlugin {
+                default_sampler: ImageSamplerDescriptor::nearest(),
             }
         ))
         .add_systems(OnEnter(AppState::Startup), at_start_up)
