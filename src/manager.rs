@@ -8,6 +8,8 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_kira_audio::AudioPlugin;
 use bevy_rapier3d::prelude::{DebugRenderStyle, NoUserData, RapierDebugRenderPlugin, RapierPhysicsPlugin};
 use winit::window::Icon;
+use crate::entities::EntitiesPlugin;
+use crate::services::ServicePlugin;
 use crate::ui::UIPlugin;
 
 #[derive(Component, Resource, States, Default, Debug, Clone, PartialEq, Eq, Hash)]
@@ -65,7 +67,7 @@ impl Plugin for ManagerPlugin {
                 plugin_init_rapier3d_debug()
             ));
 
-        app.add_plugins(UIPlugin);
+        app.add_plugins((ServicePlugin, UIPlugin, EntitiesPlugin));
 
         app.add_systems(Startup, load_window_icon);
     }

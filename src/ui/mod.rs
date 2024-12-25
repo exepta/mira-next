@@ -1,16 +1,21 @@
 mod splash_screen;
 mod title_screen;
 mod menu_screen;
+mod loading_screen;
 
 use bevy::prelude::*;
 use bevy::time::Stopwatch;
 use crate::manager::{AppState, InGameState};
+use crate::ui::loading_screen::LoadingScreenPlugin;
 use crate::ui::menu_screen::MenuScreenPlugin;
 use crate::ui::splash_screen::SplashScreenPlugin;
 use crate::ui::title_screen::TitleScreenPlugin;
 
 #[derive(Component)]
 struct UIViewCamera;
+
+#[derive(Component)]
+pub struct UiElement;
 
 #[derive(Component, Resource)]
 pub struct ScreenState {
@@ -25,11 +30,11 @@ impl Plugin for UIPlugin {
         app.add_systems(OnEnter(AppState::SplashScreen), ui_view_create);
         app.add_systems(OnEnter(AppState::InGame(InGameState::Playing)), ui_view_destroy);
 
-        app.add_plugins((SplashScreenPlugin, TitleScreenPlugin, MenuScreenPlugin));
+        app.add_plugins((SplashScreenPlugin, LoadingScreenPlugin, TitleScreenPlugin, MenuScreenPlugin));
     }
 }
 
-fn ui_view_create(mut commands: Commands) {
+pub fn ui_view_create(mut commands: Commands) {
     commands
         .spawn(Camera2d::default())
         .insert(Name::new("UI View Cam"))
@@ -41,6 +46,7 @@ fn ui_view_create(mut commands: Commands) {
         ..default()
     })
         .insert(Name::new("Overlay"))
+        .insert(UiElement)
         .insert(BackgroundColor(Color::srgba_u8(0, 0, 0, 255)))
         .insert(ZIndex(1));
     info!("UI View Cam created");

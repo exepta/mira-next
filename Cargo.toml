@@ -19,8 +19,8 @@ bevy_rapier3d = {version = "0.28.0", features = ["simd-stable"]}
 bevy_kira_audio = {version = "0.21.0", features = ["ogg"]}
 bevy-inspector-egui = {version = "0.28.0"}
 bevy_hui = {version = "0.2.1", features = ["default"]}
-#bevy_third_person_camera = {version = "0.2.0"}
-#bevy_atmosphere = {version = "0.12.0", features = ["all_models"]}
+bevy_third_person_camera = {version = "0.2.0"}
+bevy_atmosphere = {version = "0.12.0", features = ["all_models"]}
 
 #rand = {version = "0.8.5"}
 image = {version = "0.25.5", features = ["png"]}

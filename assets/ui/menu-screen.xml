@@ -30,7 +30,8 @@
                 ease="sine_in_out"
                 delay="0.3s"
                 justify_content="center"
-                align_items="center">
+                align_items="center"
+                on_press="start_new_game">
             <text id="new-game-text" font_color="#fff" font_size="20">
                 New Game
             </text>
