@@ -1,9 +1,11 @@
 mod splash_screen;
 mod title_screen;
+mod menu_screen;
 
 use bevy::prelude::*;
 use bevy::time::Stopwatch;
 use crate::manager::{AppState, InGameState};
+use crate::ui::menu_screen::MenuScreenPlugin;
 use crate::ui::splash_screen::SplashScreenPlugin;
 use crate::ui::title_screen::TitleScreenPlugin;
 
@@ -23,7 +25,7 @@ impl Plugin for UIPlugin {
         app.add_systems(OnEnter(AppState::SplashScreen), ui_view_create);
         app.add_systems(OnEnter(AppState::InGame(InGameState::Playing)), ui_view_destroy);
 
-        app.add_plugins((SplashScreenPlugin, TitleScreenPlugin));
+        app.add_plugins((SplashScreenPlugin, TitleScreenPlugin, MenuScreenPlugin));
     }
 }
 
@@ -32,6 +34,15 @@ fn ui_view_create(mut commands: Commands) {
         .spawn(Camera2d::default())
         .insert(Name::new("UI View Cam"))
         .insert(UIViewCamera);
+
+    commands.spawn(Node {
+        width: Val::Percent(100.0),
+        height: Val::Percent(100.0),
+        ..default()
+    })
+        .insert(Name::new("Overlay"))
+        .insert(BackgroundColor(Color::srgba_u8(0, 0, 0, 255)))
+        .insert(ZIndex(1));
     info!("UI View Cam created");
 }
 
@@ -47,10 +58,6 @@ pub fn destroy_screen(mut commands: Commands, query: Query<(Entity, &Name), With
         if name.as_str().eq("Container-Main") {
             commands.entity(entity).despawn_recursive();
         }
-
-        if name.as_str().eq("Overlay") {
-            commands.entity(entity).despawn_recursive();
-        }
     }
 }
 
@@ -58,15 +65,6 @@ pub fn play_life_cycle(In(entity): In<Entity>,
                        mut commands: Commands
 ) {
     commands.entity(entity).insert(Name::new("Container-Main"));
-
-    commands.spawn(Node {
-        width: Val::Percent(100.0),
-        height: Val::Percent(100.0),
-        ..default()
-    })
-        .insert(Name::new("Overlay"))
-        .insert(BackgroundColor(Color::srgba_u8(0, 0, 0, 255)))
-        .insert(ZIndex(1));
 }
 
 pub fn handle_delay_step(screen_state: &mut ResMut<ScreenState>, next_step: usize, wait: f32) {

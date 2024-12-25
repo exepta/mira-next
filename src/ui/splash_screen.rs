@@ -77,9 +77,9 @@ fn handle_step_8(
     screen_state: &mut ResMut<ScreenState>,
     next_state: &mut ResMut<NextState<AppState>>,
 ) {
-    if screen_state.timer.elapsed_secs() >= 2.0 {
-        screen_state.timer.reset();
+    if screen_state.timer.elapsed_secs() >= 3.0 {
         screen_state.step = 0;
+        screen_state.timer.reset();
         next_state.set(AppState::TitleScreen);
     }
 }

@@ -22,7 +22,9 @@ bevy_hui = {version = "0.2.1", features = ["default"]}
 #bevy_third_person_camera = {version = "0.2.0"}
 #bevy_atmosphere = {version = "0.12.0", features = ["all_models"]}
 
-rand = {version = "0.8.5"}
+#rand = {version = "0.8.5"}
+image = {version = "0.25.5", features = ["png"]}
+winit = {version = "0.30.5"}
 # toml = {version = "0.8.19"}
 serde = {version = "1.0.216", features = ["derive"]}
 

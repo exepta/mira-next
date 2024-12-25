@@ -2,10 +2,12 @@ use bevy::input::common_conditions::input_toggle_active;
 use bevy::prelude::*;
 use bevy::remote::http::RemoteHttpPlugin;
 use bevy::remote::RemotePlugin;
+use bevy::winit::WinitWindows;
 use bevy_hui::HuiPlugin;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_kira_audio::AudioPlugin;
 use bevy_rapier3d::prelude::{DebugRenderStyle, NoUserData, RapierDebugRenderPlugin, RapierPhysicsPlugin};
+use winit::window::Icon;
 use crate::ui::UIPlugin;
 
 #[derive(Component, Resource, States, Default, Debug, Clone, PartialEq, Eq, Hash)]
@@ -64,6 +66,8 @@ impl Plugin for ManagerPlugin {
             ));
 
         app.add_plugins(UIPlugin);
+
+        app.add_systems(Startup, load_window_icon);
     }
 }
 
@@ -79,5 +83,22 @@ fn plugin_init_rapier3d_debug() -> RapierDebugRenderPlugin {
             ..default()
         },
         ..default()
+    }
+}
+
+fn load_window_icon(windows: NonSend<WinitWindows>) {
+    let (icon_rgba, icon_width, icon_height) = {
+        let image = image::open("assets/logos/mira-icon.png")
+            .expect("Failed to open icon path")
+            .into_rgba8();
+        let (width, height) = image.dimensions();
+        let rgba = image.into_raw();
+        (rgba, width, height)
+    };
+
+    let icon = Icon::from_rgba(icon_rgba, icon_width, icon_height).unwrap();
+
+    for window in windows.windows.values() {
+        window.set_window_icon(Some(icon.clone()));
     }
 }

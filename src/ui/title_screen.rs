@@ -3,23 +3,25 @@ use bevy::prelude::*;
 use bevy_hui::prelude::{HtmlFunctions, HtmlNode, HtmlStyle};
 use bevy_kira_audio::{Audio, AudioControl, AudioEasing, AudioTween};
 use bevy_kira_audio::prelude::Volume;
-use crate::manager::AppState;
-use crate::ui::{destroy_screen, handle_delay_step, handle_fade_out_step, play_life_cycle, ScreenState};
+use crate::manager::{AppState, MenuState};
+use crate::ui::{destroy_screen, handle_delay_step, handle_fade_in_step, handle_fade_out_step, play_life_cycle, ScreenState};
 
 #[derive(Component, Resource)]
 struct TitleScreenState {
-    timer: Timer,
-    direction: f32,
+    timer: Timer
 }
+
+#[derive(Component, Resource)]
+struct InputDetected(pub bool);
 
 pub struct TitleScreenPlugin;
 
 impl Plugin for TitleScreenPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(TitleScreenState {
-            timer: Timer::from_seconds(2.0, TimerMode::Repeating),
-            direction: 1.0
+            timer: Timer::from_seconds(2.0, TimerMode::Repeating)
         });
+        app.insert_resource(InputDetected(false));
         app.add_systems(OnEnter(AppState::TitleScreen), create_screen);
         app.add_systems(Update, update_screen.run_if(in_state(AppState::TitleScreen)));
         app.add_systems(OnEnter(AppState::TitleScreen), play_title_music);
@@ -32,48 +34,56 @@ fn create_screen(mut commands: Commands, asset_server: Res<AssetServer>, mut htm
 
     html_functions.register("setup_mira_text", setup_mira_text);
     html_functions.register("play_life_cycle", play_life_cycle);
-
-    commands.spawn(Node {
-        width: Val::Percent(100.0),
-        height: Val::Percent(100.0),
-        ..default()
-    }).insert(ZIndex(1))
-        .insert(Name::new("Overlay"))
-        .insert(BackgroundColor(Color::srgba(0.0, 0.0, 0.0, 1.0)));
 }
 
 fn update_screen(mut screen_state: ResMut<ScreenState>,
+                 mut detect_input: ResMut<InputDetected>,
                  mut text_state: ResMut<TitleScreenState>,
                  mut background_query: Query<(&mut BackgroundColor, &Name), With<Name>>,
                  mut text_query: Query<&mut HtmlStyle, With<Name>>,
+                 mut next_state: ResMut<NextState<AppState>>,
                  time: Res<Time>,
                  keyboard: Res<ButtonInput<KeyCode>>,
                  mouse: Res<ButtonInput<MouseButton>>
 ) {
-    if keyboard.any_just_pressed([KeyCode::Enter]) || mouse.any_just_pressed([MouseButton::Left]) {
-        info!("Go to MainMenu");
-    }
-
     screen_state.timer.tick(time.delta());
     text_state.timer.tick(time.delta());
 
-    match screen_state.step {
-        0 => handle_delay_step(&mut screen_state, 1, 2.0),
-        1 => handle_fade_out_step(&mut screen_state, &mut background_query, time,2),
-        _ => { }
-    }
+    if detect_input.0 {
+        match screen_state.step {
+            0 => handle_fade_in_step(&mut screen_state, &mut background_query, time,1),
+            1 => {
+                screen_state.step = 0;
+                next_state.set(AppState::MainMenu(MenuState::MainUi));
+                screen_state.timer.reset();
+            }
+            _ => {  }
+        }
+    } else {
+        if keyboard.any_just_pressed([KeyCode::Enter]) || mouse.any_just_pressed([MouseButton::Left]) {
+            detect_input.0 = true;
+            screen_state.step = 0;
+            return;
+        }
 
-    let total_duration = text_state.timer.duration().as_secs_f32();
-    let elapsed = text_state.timer.elapsed_secs();
+        match screen_state.step {
+            0 => handle_delay_step(&mut screen_state, 1, 2.0),
+            1 => handle_fade_out_step(&mut screen_state, &mut background_query, time,2),
+            _ => { }
+        }
 
-    let alpha = 0.5 * (1.0 + (elapsed / total_duration * std::f32::consts::PI * 2.0).sin());
+        let total_duration = text_state.timer.duration().as_secs_f32();
+        let elapsed = text_state.timer.elapsed_secs();
 
-    for mut style in text_query.iter_mut() {
-        style.computed.font_color = Color::srgba(1.0, 1.0, 1.0, alpha);
-    }
+        let alpha = 0.5 * (1.0 + (elapsed / total_duration * std::f32::consts::PI * 2.0).sin());
 
-    if elapsed >= total_duration {
-        text_state.timer.reset();
+        for mut style in text_query.iter_mut() {
+            style.computed.font_color = Color::srgba(1.0, 1.0, 1.0, alpha);
+        }
+
+        if elapsed >= total_duration {
+            text_state.timer.reset();
+        }
     }
 }
 
