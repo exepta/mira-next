@@ -13,7 +13,7 @@
           column_gap="24px"
           width="100%"
           height="100%"
-          background="#1c1f1f"
+          background="#000000"
           on_spawn="play_life_cycle">
 
         <!-- Bevy Splash Container -->

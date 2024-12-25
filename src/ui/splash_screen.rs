@@ -2,12 +2,7 @@ use bevy::prelude::*;
 use bevy::time::Stopwatch;
 use bevy_hui::prelude::{HtmlFunctions, HtmlNode, HtmlStyle};
 use crate::manager::AppState;
-
-#[derive(Component, Resource)]
-struct ScreenState {
-    timer: Stopwatch,
-    step : usize
-}
+use crate::ui::{destroy_screen, handle_delay_step, handle_fade_in_step, handle_fade_out_step, play_life_cycle, ScreenState};
 
 pub struct SplashScreenPlugin;
 
@@ -44,65 +39,16 @@ fn update_screen(
     screen_state.timer.tick(time.delta());
 
     match screen_state.step {
-        0 => handle_delay_step(&mut screen_state, 1),
+        0 => handle_delay_step(&mut screen_state, 1, 2.0),
         1 => handle_fade_out_step(&mut screen_state, &mut query, time, 2),
-        2 => handle_delay_step(&mut screen_state, 3),
+        2 => handle_delay_step(&mut screen_state, 3, 2.0),
         3 => handle_fade_in_step(&mut screen_state, &mut query, time, 4),
         4 => handle_step_4(&mut screen_state, &mut display_query),
         5 => handle_fade_out_step(&mut screen_state, &mut query, time, 6),
-        6 => handle_delay_step(&mut screen_state, 7),
+        6 => handle_delay_step(&mut screen_state, 7, 2.0),
         7 => handle_fade_in_step(&mut screen_state, &mut query, time, 8),
         8 => handle_step_8(&mut screen_state, &mut next_state),
         _ => {}
-    }
-}
-
-fn handle_delay_step(screen_state: &mut ResMut<ScreenState>, next_step: usize) {
-    if screen_state.timer.elapsed_secs() >= 2.0 {
-        screen_state.step = next_step;
-        screen_state.timer.reset();
-    }
-}
-
-fn handle_fade_out_step(
-    screen_state: &mut ResMut<ScreenState>,
-    query: &mut Query<(&mut BackgroundColor, &Name), With<Name>>,
-    time: Res<Time>,
-    next_step: usize,
-) {
-    for (mut background_color, name) in query.iter_mut() {
-        if name.as_str() == "Overlay" {
-            if let BackgroundColor(Color::Srgba(Srgba { red, green, blue, alpha })) = *background_color {
-                let reduction_speed = 0.5;
-                let delta_alpha = reduction_speed * time.delta_secs();
-                let new_alpha = (alpha - delta_alpha).max(0.0);
-                *background_color = BackgroundColor(Color::Srgba(Srgba { red, green, blue, alpha: new_alpha }));
-                if new_alpha == 0.0 {
-                    screen_state.step = next_step;
-                }
-            }
-        }
-    }
-}
-
-fn handle_fade_in_step(
-    screen_state: &mut ResMut<ScreenState>,
-    query: &mut Query<(&mut BackgroundColor, &Name), With<Name>>,
-    time: Res<Time>,
-    next_step: usize,
-) {
-    for (mut background_color, name) in query.iter_mut() {
-        if name.as_str() == "Overlay" {
-            if let BackgroundColor(Color::Srgba(Srgba { red, green, blue, alpha })) = *background_color {
-                let reduction_speed = 0.5;
-                let delta_alpha = reduction_speed * time.delta_secs();
-                let new_alpha = (alpha + delta_alpha).min(1.0);
-                *background_color = BackgroundColor(Color::Srgba(Srgba { red, green, blue, alpha: new_alpha }));
-                if new_alpha == 1.0 {
-                    screen_state.step = next_step;
-                }
-            }
-        }
     }
 }
 
@@ -133,31 +79,9 @@ fn handle_step_8(
 ) {
     if screen_state.timer.elapsed_secs() >= 2.0 {
         screen_state.timer.reset();
+        screen_state.step = 0;
         next_state.set(AppState::TitleScreen);
     }
-}
-
-fn destroy_screen(mut commands: Commands, query: Query<(Entity, &Name), With<Name>>) {
-    for (entity, name) in query.iter() {
-        if name.as_str().eq("Container-Main") {
-            commands.entity(entity).despawn_recursive();
-        }
-    }
-}
-
-fn play_life_cycle(In(entity): In<Entity>,
-                   mut commands: Commands
-) {
-    commands.entity(entity).insert(Name::new("Container-Main"));
-
-    commands.spawn(Node {
-        width: Val::Percent(100.0),
-        height: Val::Percent(100.0),
-        ..default()
-    })
-        .insert(Name::new("Overlay"))
-        .insert(BackgroundColor(Color::srgba_u8(28, 31, 31, 255)))
-        .insert(ZIndex(1));
 }
 
 fn set_name_con_1(In(entity): In<Entity>,

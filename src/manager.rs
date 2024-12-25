@@ -4,6 +4,7 @@ use bevy::remote::http::RemoteHttpPlugin;
 use bevy::remote::RemotePlugin;
 use bevy_hui::HuiPlugin;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_kira_audio::AudioPlugin;
 use bevy_rapier3d::prelude::{DebugRenderStyle, NoUserData, RapierDebugRenderPlugin, RapierPhysicsPlugin};
 use crate::ui::UIPlugin;
 
@@ -53,6 +54,7 @@ impl Plugin for ManagerPlugin {
         app.init_state::<AppState>();
 
         app.add_plugins(WorldInspectorPlugin::default().run_if(input_toggle_active(false, KeyCode::F3)));
+        app.add_plugins(AudioPlugin);
         app.add_plugins((HuiPlugin, RemotePlugin::default(), RemoteHttpPlugin::default()));
 
         app
