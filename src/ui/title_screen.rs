@@ -1,9 +1,10 @@
 use std::time::Duration;
 use bevy::prelude::*;
 use bevy_hui::prelude::{HtmlFunctions, HtmlNode, HtmlStyle};
-use bevy_kira_audio::{Audio, AudioControl, AudioEasing, AudioTween};
+use bevy_kira_audio::{AudioControl, AudioEasing, AudioTween, DynamicAudioChannels};
 use bevy_kira_audio::prelude::Volume;
 use crate::manager::{AppState, MenuState};
+use crate::services::AudioHandle;
 use crate::ui::{destroy_screen, handle_delay_step, handle_fade_in_step, handle_fade_out_step, play_life_cycle, ScreenState};
 
 #[derive(Component, Resource)]
@@ -87,14 +88,18 @@ fn update_screen(mut screen_state: ResMut<ScreenState>,
     }
 }
 
-fn play_title_music(asset_server: Res<AssetServer>, audio: Res<Audio>) {
-    audio.play(asset_server.load("audio/title-music.ogg"))
+fn play_title_music(mut commands: Commands, mut audio: ResMut<DynamicAudioChannels>, asset_server: Res<AssetServer>) {
+    let handle = asset_server.load("audio/title-music.ogg");
+    let audio_handle = audio.create_channel("title-audio")
+        .play(handle)
         .start_from(10.0)
         .loop_from(10.0)
         .loop_until(343.0)
         .fade_in(AudioTween::new(Duration::from_secs(2), AudioEasing::OutPowi(2)))
         .with_volume(Volume::from(0.08))
-        .looped();
+        .looped().handle();
+
+    commands.insert_resource(AudioHandle(audio_handle));
 }
 
 fn setup_mira_text(In(entity): In<Entity>,

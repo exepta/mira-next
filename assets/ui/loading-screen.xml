@@ -3,16 +3,31 @@
           xsi:noNamespaceSchemaLocation="../schema.xsd">
 
     <node id="container-main"
-          align_items="center"
-          justify_content="center"
           width="100%"
           height="100%"
           background="#000000"
           on_spawn="setup_screen">
 
-        <text id="loading-text" font_size="40" font_color="#fff">
-            Loading...
-        </text>
+        <image id="background-holder"
+               src="backgrounds/load-background-01.png"
+               width="100%"
+               height="100%"
+               align_items="center"
+               justify_content="center"
+        >
+            <node id="content-holder"
+                  background="#000000ef"
+                  width="100%"
+                  height="100%"
+                  align_items="center"
+                  justify_content="center">
+
+                <text id="loading-text" font_size="40" font_color="#fff">
+                    Loading...
+                </text>
+
+            </node>
+        </image>
 
     </node>
 

@@ -32,16 +32,10 @@ fn update_screen(loading_state: Res<LoadingState>,
             }
         }
     }
-/*    let visibility = match loading_state.as_ref() {
-        LoadingState::LevelLoading => Visibility::Visible,
-        LoadingState::LevelReady => Visibility::Hidden,
-    };
-
-    **loading_screen = visibility;*/
 }
 
 fn setup_screen(In(entity): In<Entity>,
                 mut commands: Commands) {
     commands.entity(entity).insert(LoadingScreen)
-        .insert(Name::new("LoadingScreen"));
+        .insert(Name::new("LoadingScreen")).insert(ZIndex(2));
 }

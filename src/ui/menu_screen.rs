@@ -1,5 +1,7 @@
+use std::time::Duration;
 use bevy::prelude::*;
 use bevy_hui::prelude::{HtmlFunctions, HtmlNode};
+use bevy_kira_audio::{AudioControl, AudioEasing, AudioTween, DynamicAudioChannels};
 use crate::manager::{AppState, InGameState, MenuState};
 use crate::services::loading_service::LoadingState;
 use crate::ui::{destroy_screen, handle_fade_out_step, ScreenState, UiElement};
@@ -35,7 +37,8 @@ fn start_new_game(In(_entity): In<Entity>,
                   mut commands: Commands,
                   query: Query<Entity, With<UiElement>>,
                   mut next_state: ResMut<NextState<AppState>>,
-                  mut loading_state: ResMut<LoadingState>
+                  mut loading_state: ResMut<LoadingState>,
+                  audio: Res<DynamicAudioChannels>
 ) {
     for child_entity in query.iter() {
         commands.entity(child_entity).despawn_recursive();
@@ -43,4 +46,6 @@ fn start_new_game(In(_entity): In<Entity>,
 
     next_state.set(AppState::InGame(InGameState::Playing));
     *loading_state = LoadingState::LevelLoading;
+
+    audio.channel("title-audio").stop().fade_out(AudioTween::new(Duration::from_secs(2), AudioEasing::InPowi(2)));
 }
