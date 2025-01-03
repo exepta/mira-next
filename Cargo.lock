@@ -3543,6 +3543,7 @@ dependencies = [
  "bevy-inspector-egui",
  "bevy_atmosphere",
  "bevy_hui",
+ "bevy_image",
  "bevy_kira_audio",
  "bevy_rapier3d",
  "bevy_third_person_camera",

@@ -2,6 +2,7 @@ mod manager;
 mod ui;
 mod entities;
 mod services;
+mod environment;
 
 use bevy::image::ImageSamplerDescriptor;
 use bevy::prelude::*;

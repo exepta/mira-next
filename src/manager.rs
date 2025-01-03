@@ -6,9 +6,11 @@ use bevy::winit::WinitWindows;
 use bevy_hui::HuiPlugin;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_kira_audio::AudioPlugin;
-use bevy_rapier3d::prelude::{DebugRenderStyle, NoUserData, RapierDebugRenderPlugin, RapierPhysicsPlugin};
+use bevy_rapier3d::prelude::{DebugRenderStyle, NoUserData, PhysicsSet, RapierDebugRenderPlugin, RapierPhysicsPlugin};
+use bevy_third_person_camera::CameraSyncSet;
 use winit::window::Icon;
 use crate::entities::EntitiesPlugin;
+use crate::environment::EnvironmentPlugin;
 use crate::services::ServicePlugin;
 use crate::ui::UIPlugin;
 
@@ -64,12 +66,13 @@ impl Plugin for ManagerPlugin {
         app
             .add_plugins((
                 RapierPhysicsPlugin::<NoUserData>::default(),
-                plugin_init_rapier3d_debug()
+                //plugin_init_rapier3d_debug()
             ));
 
-        app.add_plugins((ServicePlugin, UIPlugin, EntitiesPlugin));
+        app.add_plugins((ServicePlugin, UIPlugin, EnvironmentPlugin, EntitiesPlugin));
 
         app.add_systems(Startup, load_window_icon);
+        app.configure_sets(PostUpdate, CameraSyncSet.after(PhysicsSet::StepSimulation));
     }
 }
 
